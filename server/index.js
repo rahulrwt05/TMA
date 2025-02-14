@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://tma-ten.vercel.app/login",
+    origin: "https://tma-ten.vercel.app",
     credentials: true,
   })
 );
