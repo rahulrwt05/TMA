@@ -1,30 +1,55 @@
-import User from "../models/User.js";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-export const registerUser = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-
-    // 🔹 Check if username or email exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Username or Email already exists" });
-    }
-
-    const newUser = new User({ username, email, password });
-    await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    if (error.code === 11000) {
-      res
-        .status(400)
-        .json({
-          message: "Duplicate key error: Email or Username must be unique",
-        });
-    } else {
-      res.status(500).json({ message: "Server error" });
-    }
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 3,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    preferences: {
+      darkMode: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  },
+  {
+    timestamps: true,
   }
+);
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
+
+export default mongoose.model("User", userSchema);
