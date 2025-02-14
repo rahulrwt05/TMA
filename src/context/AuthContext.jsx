@@ -16,13 +16,10 @@ export function AuthProvider({ children }) {
     try {
       const response = await axios.get(
         "https://tma-bq16.onrender.com/api/auth/me",
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setUser(response.data.user);
     } catch (err) {
-      // Handle error without logging the full error object
       setError(err.response?.data?.message || "Authentication failed");
     } finally {
       setLoading(false);
@@ -40,26 +37,8 @@ export function AuthProvider({ children }) {
       setUser(response.data.user);
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Login failed";
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    }
-  };
-
-  const register = async (username, email, password) => {
-    try {
-      setError(null);
-      const response = await axios.post(
-        "https://tma-bq16.onrender.com/api/auth/register",
-        { username, email, password },
-        { withCredentials: true }
-      );
-      setUser(response.data.user);
-      return response.data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || "Registration failed";
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      setError(err.response?.data?.message || "Login failed");
+      throw err;
     }
   };
 
@@ -68,28 +47,19 @@ export function AuthProvider({ children }) {
       await axios.post(
         "https://tma-bq16.onrender.com/api/auth/logout",
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setUser(null);
     } catch (err) {
-      setError(err.response?.data?.message || "Logout failed");
+      console.error("Logout failed:", err);
     }
   };
 
-  const value = {
-    user,
-    loading,
-    error,
-    login,
-    register,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
