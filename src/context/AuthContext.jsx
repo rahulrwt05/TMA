@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -14,13 +14,16 @@ export function AuthProvider({ children }) {
 
   const checkAuth = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/me', {
-        withCredentials: true
-      });
+      const response = await axios.get(
+        "https://tma-bq16.onrender.com/api/auth/me",
+        {
+          withCredentials: true,
+        }
+      );
       setUser(response.data.user);
     } catch (err) {
       // Handle error without logging the full error object
-      setError(err.response?.data?.message || 'Authentication failed');
+      setError(err.response?.data?.message || "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -29,14 +32,15 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5000/api/auth/login', 
+      const response = await axios.post(
+        "https://tma-bq16.onrender.com/api/auth/login",
         { email, password },
         { withCredentials: true }
       );
       setUser(response.data.user);
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed';
+      const errorMessage = err.response?.data?.message || "Login failed";
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -45,14 +49,15 @@ export function AuthProvider({ children }) {
   const register = async (username, email, password) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5000/api/auth/register',
+      const response = await axios.post(
+        "https://tma-bq16.onrender.com/api/auth/register",
         { username, email, password },
         { withCredentials: true }
       );
       setUser(response.data.user);
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed';
+      const errorMessage = err.response?.data?.message || "Registration failed";
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -60,12 +65,16 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, {
-        withCredentials: true
-      });
+      await axios.post(
+        "https://tma-bq16.onrender.com/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       setUser(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Logout failed');
+      setError(err.response?.data?.message || "Logout failed");
     }
   };
 
@@ -75,14 +84,10 @@ export function AuthProvider({ children }) {
     error,
     login,
     register,
-    logout
+    logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

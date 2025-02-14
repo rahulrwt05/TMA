@@ -14,7 +14,7 @@ export default function Calendar() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks', {
+      const response = await axios.get('https://tma-bq16.onrender.com/api/tasks', {
         withCredentials: true
       });
       setTasks(response.data);

@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { FiMoreVertical, FiPlus, FiSearch, FiFilter } from 'react-icons/fi';
-import axios from 'axios';
-import TaskModal from './TaskModal';
+import { useState, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { FiMoreVertical, FiPlus, FiSearch, FiFilter } from "react-icons/fi";
+import axios from "axios";
+import TaskModal from "./TaskModal";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterPriority, setFilterPriority] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPriority, setFilterPriority] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -18,47 +18,57 @@ export default function Tasks() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks', {
-        withCredentials: true
-      });
+      const response = await axios.get(
+        "https://tma-bq16.onrender.com/api/tasks",
+        {
+          withCredentials: true,
+        }
+      );
       setTasks(response.data);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error("Error fetching tasks:", error);
     }
   };
 
   const handleCreateTask = async (taskData) => {
     try {
-      await axios.post('http://localhost:5000/api/tasks', taskData, {
-        withCredentials: true
+      await axios.post("https://tma-bq16.onrender.com/api/tasks", taskData, {
+        withCredentials: true,
       });
       fetchTasks();
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error("Error creating task:", error);
     }
   };
 
   const handleUpdateTask = async (taskData) => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${selectedTask._id}`, taskData, {
-        withCredentials: true
-      });
+      await axios.put(
+        `https://tma-bq16.onrender.com/api/tasks/${selectedTask._id}`,
+        taskData,
+        {
+          withCredentials: true,
+        }
+      );
       fetchTasks();
       setSelectedTask(null);
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
     }
   };
 
   const handleDeleteTask = async (taskId) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
-          withCredentials: true
-        });
+        await axios.delete(
+          `https://tma-bq16.onrender.com/api/tasks/${taskId}`,
+          {
+            withCredentials: true,
+          }
+        );
         fetchTasks();
       } catch (error) {
-        console.error('Error deleting task:', error);
+        console.error("Error deleting task:", error);
       }
     }
   };
@@ -73,18 +83,20 @@ export default function Tasks() {
     setTasks(items);
   };
 
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const matchesPriority = !filterPriority || task.priority === filterPriority;
     const matchesCategory = !filterCategory || task.category === filterCategory;
     return matchesSearch && matchesPriority && matchesCategory;
   });
 
   const priorityColors = {
-    Critical: 'bg-red-100 text-red-800',
-    Urgent: 'bg-yellow-100 text-yellow-800',
-    Important: 'bg-blue-100 text-blue-800',
-    Someday: 'bg-gray-100 text-gray-800'
+    Critical: "bg-red-100 text-red-800",
+    Urgent: "bg-yellow-100 text-yellow-800",
+    Important: "bg-blue-100 text-blue-800",
+    Someday: "bg-gray-100 text-gray-800",
   };
 
   return (
@@ -168,7 +180,11 @@ export default function Tasks() {
                             </p>
                           )}
                           <div className="flex items-center mt-2 space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs ${priorityColors[task.priority]}`}>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                priorityColors[task.priority]
+                              }`}
+                            >
                               {task.priority}
                             </span>
                             <span className="text-sm text-gray-500">
